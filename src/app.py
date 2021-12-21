@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from models.website import Website
 
 class App:
-    def __init__(self) -> None:
+    def __new__(self) -> FastAPI:
         self.app = FastAPI()
         log = logging.getLogger("app")
         log.setLevel(logging.DEBUG)
@@ -19,5 +19,4 @@ class App:
         def root():
             return uktier2
 
-    def getApi(self) -> FastAPI:
         return self.app
