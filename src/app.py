@@ -1,22 +1,35 @@
 import logging
+from logging import Logger
 from fastapi import FastAPI
-from models.website import Website
+from .routes import scrape
+import toml
+import os
+
+def appLogging(appName, logLevel = logging.DEBUG) -> Logger:
+    log = logging.getLogger(appName)
+    log.setLevel(logLevel)
+    ch = logging.StreamHandler()
+    ch.setLevel(logLevel)
+    log.addHandler(ch)
+    return log
 
 class App:
     def __new__(self) -> FastAPI:
         self.app = FastAPI()
-        log = logging.getLogger("app")
-        log.setLevel(logging.DEBUG)
+        self.appLogger = appLogging("scrapie-app", logging.DEBUG)
+        options = {
+            'appLogger': self.appLogger,
+        }
+        scrape.ScrapeRoute(self.app, options)
 
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
-
-        log.addHandler(ch)
-
-        uktier2 = Website(name="UK Tier 2", url="https://www.uk-tier2.com/", body="UK Tier 2 is a UK-based provider of IT services and solutions.", protocol="https")
-
-        @self.app.get("/")
-        def root():
-            return uktier2
-
+        @self.app.get('/')
+        def home():
+            appProjectData = toml.load(os.path.join('pyproject.toml'))
+            appPoetryData = appProjectData['tool']['poetry']
+            appMetadata = {
+                'name': appPoetryData['name'],
+                'version': appPoetryData['version'],
+                'author': appPoetryData['authors']
+            }
+            return appMetadata
         return self.app
