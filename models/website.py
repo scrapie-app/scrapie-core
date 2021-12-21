@@ -5,3 +5,5 @@ class Website(BaseModel):
   url: str
   body: str
   protocol: str
+  dnsResolved: bool = False
+  reachable: bool = False
