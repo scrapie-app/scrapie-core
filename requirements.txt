@@ -1,0 +1,7 @@
+fastapi==0.70.1
+uvicorn
+graphene>=3.0
+Authlib
+Starlette
+httpx
+itsdangerous
