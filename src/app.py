@@ -22,6 +22,7 @@ class App:
         }
         scrape.ScrapeRoute(self.app, options)
 
+        # home route
         @self.app.get('/')
         def home():
             appProjectData = toml.load(os.path.join('pyproject.toml'))
