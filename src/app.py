@@ -1,25 +1,11 @@
-import logging
-from logging import Logger
 from fastapi import FastAPI
 from .routes import scrape
 import toml
 import os
 
-def appLogging(appName, logLevel = logging.DEBUG) -> Logger:
-    log = logging.getLogger(appName)
-    log.setLevel(logLevel)
-    ch = logging.StreamHandler()
-    ch.setLevel(logLevel)
-    log.addHandler(ch)
-    return log
-
 class App:
-    def __new__(self) -> FastAPI:
+    def __new__(self, options) -> FastAPI:
         self.app = FastAPI()
-        self.appLogger = appLogging("scrapie-app", logging.DEBUG)
-        options = {
-            'appLogger': self.appLogger
-        }
         scrape.ScrapeRoute(app=self.app, options=options)
 
         # home route
