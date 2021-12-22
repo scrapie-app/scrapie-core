@@ -18,9 +18,9 @@ class App:
         self.app = FastAPI()
         self.appLogger = appLogging("scrapie-app", logging.DEBUG)
         options = {
-            'appLogger': self.appLogger,
+            'appLogger': self.appLogger
         }
-        scrape.ScrapeRoute(self.app, options)
+        scrape.ScrapeRoute(app=self.app, options=options)
 
         # home route
         @self.app.get('/')
