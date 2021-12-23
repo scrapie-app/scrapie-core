@@ -1,13 +1,31 @@
 from fastapi import FastAPI
-from .routes import scrape
+from sqlalchemy.sql.functions import mode
+from .routes import scrape, users
 import toml
 import os
+
+from database import models
+from database.connect import engine, SessionLocal
+
+models.Base.metadata.create_all(bind=engine)
+
+# Dependency
+def get_db():
+  db = SessionLocal()
+  try:
+      yield db
+  finally:
+      db.close()
 
 class App:
     def __new__(self, options) -> FastAPI:
         self.app = FastAPI()
-        scrape.ScrapeRoute(app=self.app, options=options)
-
+        appOptions = {
+          'get_db': get_db,
+          **options
+        }
+        scrape.ScrapeRoute(app=self.app, options=appOptions)
+        users.UserRoute(app=self.app, options=appOptions)
         # home route
         @self.app.get('/')
         def home():

@@ -1,5 +1,5 @@
 import requests
-from models import website
+from schema import website
 
 class ScrapeRoute:
     def __init__(self, app, options) -> None:
