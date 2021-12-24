@@ -19,7 +19,13 @@ def get_db():
 
 class App:
     def __new__(self, options) -> FastAPI:
-        self.app = FastAPI()
+        appProjectData = toml.load(os.path.join('pyproject.toml'))
+        appPoetryData = appProjectData['tool']['poetry']
+        self.app = FastAPI(
+            title=appPoetryData['name'],
+            version=appPoetryData['version'],
+            description=appPoetryData['description']
+        )
         appOptions = {
           'get_db': get_db,
           **options
@@ -29,8 +35,6 @@ class App:
         # home route
         @self.app.get('/')
         def home():
-            appProjectData = toml.load(os.path.join('pyproject.toml'))
-            appPoetryData = appProjectData['tool']['poetry']
             appMetadata = {
                 'name': appPoetryData['name'],
                 'version': appPoetryData['version'],
