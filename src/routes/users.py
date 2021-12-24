@@ -14,9 +14,17 @@ class UserRoute:
       @app.get("/user/{user_id}", response_model=user.User)
       def getUser(user_id: int, db: Session = Depends(options['get_db'])):
         db_user = db.query(models.User).filter(models.User.id == user_id).first()
+        db_user_api_quota = db.query(models.APIQuota).filter(models.APIQuota.user_id == user_id).first()
         if db_user is None:
           raise HTTPException(status_code=404, detail="User not found")
-        return db_user
+        return user.User(
+          id=db_user.id,
+          email=db_user.email,
+          api_key=db_user_api_quota.api_key,
+          quota=db_user_api_quota.quota,
+          created_at=db_user.created_at,
+          updated_at=db_user.updated_at
+        )
 
       # Create a new user with email and password
       @app.post("/user", response_model=user.User)

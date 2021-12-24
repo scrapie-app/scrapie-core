@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
+from database.models import APIQuota
+
 class UserBase(BaseModel):
   email: str
 
@@ -10,6 +12,8 @@ class UserCreate(UserBase):
 
 class User(UserBase):
   id: int
+  api_key: Optional[str] = None
+  quota: Optional[int] = None
   created_at: Optional[datetime] = None
   updated_at: Optional[datetime] = None
 
