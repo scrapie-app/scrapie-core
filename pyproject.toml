@@ -17,6 +17,8 @@ psycopg2 = "^2.9.2"
 SQLAlchemy = "^1.4.28"
 python-dotenv = "^0.19.2"
 alembic = "^1.7.5"
+asyncio = "^3.4.3"
+uuid = "^1.30"
 
 [tool.poetry.dev-dependencies]
 
