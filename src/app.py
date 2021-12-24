@@ -1,18 +1,40 @@
 from fastapi import FastAPI
-from .routes import scrape
+from .routes import scrape, users, auth
 import toml
 import os
 
+from database import models
+from database.connect import engine, SessionLocal
+
+models.Base.metadata.create_all(bind=engine)
+
+# Dependency
+def get_db():
+  db = SessionLocal()
+  try:
+      yield db
+  finally:
+      db.close()
+
 class App:
     def __new__(self, options) -> FastAPI:
-        self.app = FastAPI()
-        scrape.ScrapeRoute(app=self.app, options=options)
-
+        appProjectData = toml.load(os.path.join('pyproject.toml'))
+        appPoetryData = appProjectData['tool']['poetry']
+        self.app = FastAPI(
+            title=appPoetryData['name'],
+            version=appPoetryData['version'],
+            description=appPoetryData['description']
+        )
+        appOptions = {
+          'get_db': get_db,
+          **options
+        }
+        scrape.ScrapeRoute(app=self.app, options=appOptions)
+        users.UserRoute(app=self.app, options=appOptions)
+        auth.AuthRoute(app=self.app, options=appOptions)
         # home route
         @self.app.get('/')
         def home():
-            appProjectData = toml.load(os.path.join('pyproject.toml'))
-            appPoetryData = appProjectData['tool']['poetry']
             appMetadata = {
                 'name': appPoetryData['name'],
                 'version': appPoetryData['version'],
