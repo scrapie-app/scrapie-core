@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from sqlalchemy.sql.functions import mode
-from .routes import scrape, users
+from .routes import scrape, users, auth
 import toml
 import os
 
@@ -32,6 +31,7 @@ class App:
         }
         scrape.ScrapeRoute(app=self.app, options=appOptions)
         users.UserRoute(app=self.app, options=appOptions)
+        auth.AuthRoute(app=self.app, options=appOptions)
         # home route
         @self.app.get('/')
         def home():
