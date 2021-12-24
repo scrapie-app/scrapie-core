@@ -3,7 +3,7 @@ from schema import website
 
 class ScrapeRoute:
     def __init__(self, app, options) -> None:
-        @app.post("/scrape/testWebsite")
+        @app.post("/scrape/ping")
         def testWebsite(website: website.Website):
             options['appLogger'].debug(f'Testing website connection for {website}')
             try:
