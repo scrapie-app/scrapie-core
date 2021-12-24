@@ -8,6 +8,15 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
   password: str
 
+class UserLogin(UserCreate):
+  pass
+
+class UserAPILogin(UserBase):
+  api_key: str
+
+class UserBearer(BaseModel):
+  bearer_token: str
+
 class User(UserBase):
   id: int
   api_key: Optional[str] = None
