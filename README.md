@@ -39,3 +39,8 @@ Downgrade migrations
 $ alembic downgrade -1
 ```
 
+## API Docs
+
+Access API docs at `host:port/docs`
+
+For localhost `localhost:8000/docs`
