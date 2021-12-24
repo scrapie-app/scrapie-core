@@ -1,6 +1,6 @@
 from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
-from schema import user
+from schema import user as UserSchema
 from database import models
 import hashlib, uuid
 from ..util import api_key_util
@@ -11,13 +11,13 @@ from datetime import datetime
 class UserRoute:
     def __init__(self, app, options) -> None:
       # Get user for user id
-      @app.get("/user/{user_id}", response_model=user.User)
+      @app.get("/user/{user_id}", response_model=UserSchema.User)
       def getUser(user_id: int, db: Session = Depends(options['get_db'])):
         db_user = db.query(models.User).filter(models.User.id == user_id).first()
         db_user_api_quota = db.query(models.APIQuota).filter(models.APIQuota.user_id == user_id).first()
         if db_user is None:
           raise HTTPException(status_code=404, detail="User not found")
-        return user.User(
+        return UserSchema.User(
           id=db_user.id,
           email=db_user.email,
           api_key=db_user_api_quota.api_key,
@@ -27,8 +27,8 @@ class UserRoute:
         )
 
       # Create a new user with email and password
-      @app.post("/user", response_model=user.User)
-      def createUser(user: user.UserCreate, db: Session = Depends(options['get_db'])):
+      @app.post("/user", response_model=UserSchema.User)
+      def createUser(user: UserSchema.UserCreate, db: Session = Depends(options['get_db'])):
         db_user = db.query(models.User).filter(models.User.email == user.email).first()
         if db_user is not None:
           raise HTTPException(status_code=400, detail="User already exists")
@@ -46,4 +46,11 @@ class UserRoute:
         db_user_api_quota = models.APIQuota(user_id=db_user.id, api_key=api_key, quota=100, created_at=time_now, updated_at=time_now)
         db.add(db_user_api_quota)
         db.commit()
-        return db_user
+        return UserSchema.User(
+          id=db_user.id,
+          email=db_user.email,
+          api_key=db_user_api_quota.api_key,
+          quota=db_user_api_quota.quota,
+          created_at=db_user.created_at,
+          updated_at=db_user.updated_at
+        )
