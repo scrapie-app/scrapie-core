@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "scrapie"
 version = "0.1.0"
-description = ""
+description = "Scrapie helps you scrape websites on the go."
 authors = ["Aditya Karnam <akarnam37@gmail.com>"]
 
 [tool.poetry.dependencies]
