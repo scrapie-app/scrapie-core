@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import mode
 from schema import user as UserSchema
 from database import models
-import bcrypt, json
+import json
 from ..util import api_secrets_util
 
 class AuthRoute:
