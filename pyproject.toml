@@ -13,7 +13,6 @@ httpx = "^0.21.1"
 itsdangerous = "^2.0.1"
 toml = "^0.10.2"
 requests = "^2.26.0"
-psycopg2 = "^2.9.2"
 SQLAlchemy = "^1.4.28"
 python-dotenv = "^0.19.2"
 alembic = "^1.7.5"
@@ -22,6 +21,8 @@ uuid = "^1.30"
 redis = "^4.0.2"
 python-multipart = "^0.0.5"
 bcrypt = "^3.2.0"
+pytest = "^6.2.5"
+psycopg2 = "^2.9.3"
 
 [tool.poetry.dev-dependencies]
 

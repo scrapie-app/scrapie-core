@@ -1,5 +1,4 @@
-import uvicorn
-from src import app
+from .app import App
 import logging
 from logging.config import fileConfig
 import dotenv, redis, os
@@ -12,7 +11,4 @@ options = {
     'appLogger': logging.getLogger(),
     'redis': redis.Redis(connection_pool=redisConnectionPool)
 }
-scrapieApi = app.App(options)
-
-if __name__ == "__main__":
-    uvicorn.run(scrapieApi, host="0.0.0.0", port=8000, log_level="info")
+scrapieApi = App(options)
