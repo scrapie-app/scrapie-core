@@ -6,13 +6,19 @@ from sqlalchemy import pool
 
 from alembic import context
 
-dotenv.load_dotenv()
+dotenv.load_dotenv(f".env.{os.environ.get('NODE_ENV')}")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", os.environ.get("DATABASE_URL"))
+postgres_host = os.environ.get("POSTGRES_HOST")
+postgres_port = os.environ.get("POSTGRES_PORT")
+postgres_user = os.environ.get("POSTGRES_USER")
+postgres_password = os.environ.get("POSTGRES_PASSWORD")
+postgres_db = os.environ.get("POSTGRES_DB")
+
+config.set_main_option("sqlalchemy.url", f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_db}")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
