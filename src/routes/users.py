@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from schema import user as UserSchema
 from database import models
@@ -7,10 +7,10 @@ from time import time
 from datetime import datetime
 import bcrypt
 
-class UserRoute:
-    def __init__(self, app, options) -> None:
+def users_route_factory(options):
+      router = APIRouter()
       # Get user for user id
-      @app.get("/user/{user_id}", response_model=UserSchema.User)
+      @router.get("/user/{user_id}", response_model=UserSchema.User)
       def getUser(user_id: int, db: Session = Depends(options['get_db'])):
         db_user = db.query(models.User).filter(models.User.id == user_id).first()
         db_user_api_quota = db.query(models.APIQuota).filter(models.APIQuota.user_id == user_id).first()
@@ -26,7 +26,7 @@ class UserRoute:
         )
 
       # Create a new user with email and password
-      @app.post("/user", response_model=UserSchema.User)
+      @router.post("/user", response_model=UserSchema.User)
       def createUser(user: UserSchema.UserCreate, db: Session = Depends(options['get_db'])):
         db_user = db.query(models.User).filter(models.User.email == user.email).first()
         if db_user is not None:
@@ -51,3 +51,5 @@ class UserRoute:
           created_at=db_user.created_at,
           updated_at=db_user.updated_at
         )
+
+      return router

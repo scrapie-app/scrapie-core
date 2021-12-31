@@ -29,9 +29,14 @@ class App:
           'get_db': get_db,
           **options
         }
-        scrape.ScrapeRoute(app=self.app, options=appOptions)
-        users.UserRoute(app=self.app, options=appOptions)
-        auth.AuthRoute(app=self.app, options=appOptions)
+        user_router = users.users_route_factory(options=appOptions)
+        scrape_router = scrape.scrape_route_factory(options=appOptions)
+        auth_router = auth.auth_route_factory(options=appOptions)
+
+        self.app.include_router(user_router)
+        self.app.include_router(scrape_router)
+        self.app.include_router(auth_router)
+        
         # home route
         @self.app.get('/')
         def home():
