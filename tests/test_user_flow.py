@@ -4,7 +4,6 @@ import pytest
 
 client = TestClient(main.scrapieApi)
 
-@pytest.mark.skip(reason="Dont test yet")
 def test_create_user():
     response = client.post("/user", json={
         "email": "hello@hello.com",
