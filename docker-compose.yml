@@ -25,6 +25,11 @@ services:
     ports:
       - "6379:6379"
     restart: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
     networks:
       - scrapie-network
   
@@ -37,8 +42,10 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - postgresdb
-      - redis
+      postgresdb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - scrapie-network
     links:

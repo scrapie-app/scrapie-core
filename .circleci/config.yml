@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.9
+      - image: circleci/postgres
+        environment:
+          POSTGRES_USER: $POSTGRES_USER
+          POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+          POSTGRES_DB: $POSTGRES_DB
+      - image: circleci/redis
+    steps:
+      - checkout
+      - run:
+          name: Setup Poetry Environment
+          command: |
+            pip3 install poetry
+            poetry config virtualenvs.create false
+            poetry install --no-dev
+            echo $POSTGRES_USER
+      - run:
+          name: Running tests
+          command: |
+            pytest

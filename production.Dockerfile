@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-COPY scripts/init.sql /docker-entrypoint-initdb.d/
-
 ENV NODE_ENV=production
 
 ENV PYTHONPATH=${PYTHONPATH}:${PWD}
@@ -16,4 +14,4 @@ RUN poetry install --no-dev
 
 CMD [ "alembic", "upgrade", "head" ]
 
-ENTRYPOINT [ "poetry", "run", "python", "main.py" ]
+ENTRYPOINT [ "poetry", "run", "python", "startApp.py" ]
