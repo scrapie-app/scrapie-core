@@ -35,13 +35,15 @@ def test_user_test_ping():
     assert login_auth.status_code == 200
     login_auth_response = login_auth.json()
     bearer_token = login_auth_response.get("bearer_token")
-    ping_test_scrape = client.get("/scrape/ping", headers={
-        "Authorization": f"Bearer {bearer_token}"
-    }, 
-    json={
-        "name": "test_ping",
-        "url": "https://google.com/"
-    })
+    ping_test_scrape = client.get("/scrape/ping", 
+        headers={
+            "Authorization": f"Bearer {bearer_token}"
+        }, 
+        json={
+            "name": "test_ping",
+            "url": "https://google.com/"
+        }
+    )
 
     assert ping_test_scrape.status_code == 200
     response_user_next = client.get(f"/user/{user_id}")
