@@ -1,16 +1,19 @@
 from fastapi.testclient import TestClient
 from src import main
-import pytest
+from faker import Faker
 
 client = TestClient(main.scrapieApi)
+fake = Faker()
 
 def test_create_user():
+    fake_email = fake.email()
+    fake_password = fake.password()
     response = client.post("/user", json={
-        "email": "hello@hello.com",
-        "password": "password123"
+        "email": fake_email,
+        "password": fake_password
     })
     assert response.status_code == 200
-    assert response.json().get("email") == "hello@hello.com"
+    assert response.json().get("email") == fake_email
     assert response.json().get("id") is not None
     assert response.json().get("password") is None
     assert response.json().get("created_at") is not None

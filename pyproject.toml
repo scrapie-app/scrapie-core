@@ -23,6 +23,7 @@ python-multipart = "^0.0.5"
 bcrypt = "^3.2.0"
 pytest = "^6.2.5"
 psycopg2 = "^2.9.3"
+Faker = "^11.1.0"
 
 [tool.poetry.dev-dependencies]
 
