@@ -23,6 +23,7 @@ def upgrade():
       sa.Column('user_id', sa.Integer(), nullable=False),
       sa.Column('api_key', sa.String(length=255), nullable=False),
       sa.Column('quota', sa.Integer(), nullable=False),
+      sa.Column('active', sa.Integer(), nullable=False),
       sa.Column('created_at', sa.DateTime(), nullable=True),
       sa.Column('updated_at', sa.DateTime(), nullable=True)
     )

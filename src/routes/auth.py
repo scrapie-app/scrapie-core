@@ -36,5 +36,20 @@ def auth_route_factory(options):
             return UserSchema.UserBearer(bearer_token=user_bearer_token)
         redis_session_data_parsed = json.loads(redis_session_data)
         return UserSchema.UserBearer(bearer_token=redis_session_data_parsed.bearer_token)
-        # create a bearer token and put it in redis, expires 24 hrs
+
+    @router.post('/token/create')
+    def create_token():
+        pass
+
+    @router.post('/token/revoke')
+    def revoke_token():
+        pass
+    
+    @router.post('/token/enable')
+    def enable_token():
+        pass
+
+    @router.post('/token/disable')
+    def disable_token():
+        pass
     return router
