@@ -4,9 +4,6 @@ jobs:
     docker:
       - image: circleci/python:3.9
       - image: circleci/postgres
-        auth:
-          username: $POSTGRES_USER
-          password: $POSTGRES_PASSWORD
         environment:
           POSTGRES_USER: $POSTGRES_USER
           POSTGRES_PASSWORD: $POSTGRES_PASSWORD
