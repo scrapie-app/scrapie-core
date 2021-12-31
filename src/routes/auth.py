@@ -24,6 +24,7 @@ class AuthRoute:
             redis_client = options['redis']
             redis_key = f'user-session-{db_user.id}'
             redis_session_data = redis_client.get(redis_key)
+
             if not redis_session_data:
                 user_bearer_token = api_secrets_util.generate_bearer_token(16)
                 redis_login_data = json.dumps({ 'user_id': db_user.id, 'api_key': db_user_api_data.api_key, 'bearer_token': user_bearer_token })
@@ -35,5 +36,6 @@ class AuthRoute:
                 redis_client.expire(redis_key, 24 * 60 * 60)
                 return UserSchema.UserBearer(bearer_token=user_bearer_token)
             redis_session_data_parsed = json.loads(redis_session_data)
-            return UserSchema.UserBearer(bearer_token=redis_session_data_parsed.bearer_token)
+
+            return UserSchema.UserBearer(bearer_token=redis_session_data_parsed['bearer_token'])
             # create a bearer token and put it in redis, expires 24 hrs

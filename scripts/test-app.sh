@@ -1,4 +1,4 @@
 #!/bin/bash
 
-NODE_ENV=development
+export NODE_ENV=development
 pytest
