@@ -40,7 +40,7 @@ def users_route_factory(options):
         # get the user id and create a quota for the user
         # generate the API key here
         api_key = api_secrets_util.generate_api_key(24)
-        db_user_api_quota = models.APIQuota(user_id=db_user.id, api_key=api_key, quota=100, created_at=time_now, updated_at=time_now)
+        db_user_api_quota = models.APIQuota(user_id=db_user.id, api_key=api_key, active=True, quota=100, created_at=time_now, updated_at=time_now)
         db.add(db_user_api_quota)
         db.commit()
         return UserSchema.User(

@@ -6,6 +6,7 @@ class APIQuotaBase(BaseModel):
   user_id: int
   api_key: str
   quota: int
+  active: bool
   created_at: Optional[str] = None
   updated_at: Optional[str] = None
 
