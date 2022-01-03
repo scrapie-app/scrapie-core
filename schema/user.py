@@ -17,6 +17,13 @@ class UserAPILogin(UserBase):
 class UserBearer(BaseModel):
   bearer_token: str
 
+class UserResponse(UserBase):
+  id: int
+  api_key: Optional[str] = None
+  quota: Optional[int] = None
+  created_at: Optional[datetime] = None
+  updated_at: Optional[datetime] = None  
+
 class User(UserBase):
   id: int
   api_key: Optional[str] = None
