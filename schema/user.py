@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 class UserBase(BaseModel):
@@ -23,6 +23,18 @@ class UserResponse(UserBase):
   quota: Optional[int] = None
   created_at: Optional[datetime] = None
   updated_at: Optional[datetime] = None  
+
+class UserAPIData(BaseModel):
+  api_key: str
+  quota: int
+  active: bool
+  created_at: Optional[datetime] = None
+  updated_at: Optional[datetime] = None
+
+class UserAPIKeysResponse(BaseModel):
+  id: int
+  api_keys: List[UserAPIData]
+  
 
 class User(UserBase):
   id: int
