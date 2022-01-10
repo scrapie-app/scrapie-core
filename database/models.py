@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from .connect import Base
 
 
@@ -16,5 +16,6 @@ class APIQuota(Base):
   user_id = Column(Integer, ForeignKey('users.id'), index=True)
   api_key = Column(String, unique=True, index=True)
   quota = Column(Integer)
+  active = Column(Boolean, default=False)
   created_at = Column(DateTime, index=True)
   updated_at = Column(DateTime, index=True)

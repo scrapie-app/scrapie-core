@@ -5,15 +5,18 @@ from faker import Faker
 client = TestClient(main.scrapieApi)
 fake = Faker()
 
-def test_create_user():
+def create_user():
     fake_email = fake.email()
     fake_password = fake.password()
     response = client.post("/user", json={
         "email": fake_email,
         "password": fake_password
     })
+    return [response, fake_email, fake_password]
+
+def test_create_user():
+    [response, _, _] = create_user()
     assert response.status_code == 200
-    assert response.json().get("email") == fake_email
     assert response.json().get("id") is not None
     assert response.json().get("password") is None
     assert response.json().get("created_at") is not None
@@ -21,7 +24,8 @@ def test_create_user():
     assert response.json().get("quota") == 100
 
 def test_user_test_ping():
-    user_id = 1
+    [user_data, email, password] = create_user()
+    user_id = user_data.json().get("id")
     response = client.get(f"/user/{user_id}")
     user = response.json()
     assert response.status_code == 200
@@ -30,7 +34,7 @@ def test_user_test_ping():
     quota = user.get("quota")
     login_auth = client.post("/login", json={
         "email": email,
-        "api_key": api_key
+        "password": password
     })
     assert login_auth.status_code == 200
     login_auth_response = login_auth.json()
