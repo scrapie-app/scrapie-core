@@ -28,7 +28,7 @@ def auth_route_factory(options):
 
             redis_bearer_key = f'user-bearer-{user_bearer_token}'
             redis_client.set(redis_bearer_key, redis_login_data)
-            redis_client.expire(redis_key, 24 * 60 * 60)
+            redis_client.expire(redis_bearer_key, 24 * 60 * 60)
             return UserSchema.UserBearer(bearer_token=user_bearer_token)
         redis_session_data_parsed = json.loads(redis_session_data)
         return UserSchema.UserBearer(bearer_token=redis_session_data_parsed['bearer_token'])
