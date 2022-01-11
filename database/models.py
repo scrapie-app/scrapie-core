@@ -19,3 +19,11 @@ class APIQuota(Base):
   active = Column(Boolean, default=False)
   created_at = Column(DateTime, index=True)
   updated_at = Column(DateTime, index=True)
+
+class Projects(Base):
+  __tablename__ = 'projects'
+  id = Column(Integer, primary_key=True, index=True)
+  user_id = Column(Integer, ForeignKey('users.id'), index=True)
+  api_key_id = Column(Integer, ForeignKey('api_quota.id'), index=True)
+  created_at = Column(DateTime, index=True)
+  updated_at = Column(DateTime, index=True)
