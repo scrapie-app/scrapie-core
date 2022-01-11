@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from time import time
 from database import models
-from schema import user as UserSchema
+from schema import user as UserSchema, apiQuota as APIQuota
 from ..util import helper_fns, api_secrets_util
 
 def api_key_route_factory(options):
@@ -12,14 +12,14 @@ def api_key_route_factory(options):
     get_current_active_user = helper_fns_factory['get_current_active_user']
 
     @router.post('/create', response_model=UserSchema.User)
-    def create_token(current_user: UserSchema.UserResponse = Depends(get_current_active_user), db: Session = Depends(options['get_db'])):
+    def create_api_key(current_user: UserSchema.UserResponse = Depends(get_current_active_user), db: Session = Depends(options['get_db'])):
         api_data_for_user = db.query(models.APIQuota).filter(models.APIQuota.user_id == current_user.id).all()
         if len(api_data_for_user) >= 5:
             raise HTTPException(status_code=422, detail='Cannot create API Key, api keys limit exceeded, you can only create 5 keys')
         # generate the API key here
         api_key = api_secrets_util.generate_api_key(24)
         time_now = datetime.fromtimestamp(time())
-        db_user_api_quota = models.APIQuota(user_id=current_user.id, api_key=api_key, quota=100, created_at=time_now, updated_at=time_now)
+        db_user_api_quota = models.APIQuota(user_id=current_user.id, api_key=api_key, quota=100, active=True, created_at=time_now, updated_at=time_now)
         db.add(db_user_api_quota)
         db.commit()
         return UserSchema.User(
@@ -31,17 +31,16 @@ def api_key_route_factory(options):
           updated_at=current_user.updated_at
         )
 
-    @router.post('/revoke')
-    def revoke_token():
-        pass
-    
-    @router.post('/enable')
-    def enable_token():
-        pass
+    @router.post('/revoke', response_model=APIQuota.APIQuotaBase)
+    def revoke_api_key(api_key: APIQuota.APIKey, current_user: UserSchema.UserResponse = Depends(get_current_active_user), db: Session = Depends(options['get_db'])):
+        db_user_api_quota_data_for_api_key = db.query(models.APIQuota).filter(models.APIQuota.user_id == current_user.id and models.APIQuota.api_key == api_key).first()
+        if not db_user_api_quota_data_for_api_key:
+            raise HTTPException(status_code=400, detail='No such API Key found')
+        db_user_api_quota_data_for_api_key.active = False
+        db_user_api_quota_data_for_api_key.updated_at = datetime.fromtimestamp(time())
+        db.commit()
+        return db_user_api_quota_data_for_api_key
 
-    @router.post('/disable')
-    def disable_token():
-        pass
 
     @router.get('/keys')
     def get_all_api_keys(current_user: UserSchema.UserResponse = Depends(get_current_active_user), db: Session = Depends(options['get_db'])):

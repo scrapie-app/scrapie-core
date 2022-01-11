@@ -10,6 +10,9 @@ class APIQuotaBase(BaseModel):
   created_at: Optional[str] = None
   updated_at: Optional[str] = None
 
+class APIKey(BaseModel):
+  api_key: str
+
 class APIQuota(APIQuotaBase):
   class Config:
     orm_mode = True
