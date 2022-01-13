@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy.sql.expression import null
 from .connect import Base
 
 
@@ -24,6 +25,9 @@ class Projects(Base):
   __tablename__ = 'projects'
   id = Column(Integer, primary_key=True, index=True)
   user_id = Column(Integer, ForeignKey('users.id'), index=True)
+  name = Column(String, nullable=False)
+  description = Column(String, default='')
   api_key_id = Column(Integer, ForeignKey('api_quota.id'), index=True)
+  active = Column(Boolean, default=False)
   created_at = Column(DateTime, index=True)
   updated_at = Column(DateTime, index=True)

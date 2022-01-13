@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from datetime import datetime
 from time import time
+from constants import messages
 from database import models
 from schema import user as UserSchema, apiQuota as APIQuota
 from ..util import helper_fns, api_secrets_util
@@ -15,7 +17,7 @@ def api_key_route_factory(options):
     def create_api_key(current_user: UserSchema.UserResponse = Depends(get_current_active_user), db: Session = Depends(options['get_db'])):
         api_data_for_user = db.query(models.APIQuota).filter(models.APIQuota.user_id == current_user.id).all()
         if len(api_data_for_user) >= 5:
-            raise HTTPException(status_code=422, detail='Cannot create API Key, api keys limit exceeded, you can only create 5 keys')
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=messages.API_KEYS_LIMIT_EXCEEDED)
         # generate the API key here
         api_key = api_secrets_util.generate_api_key(24)
         time_now = datetime.fromtimestamp(time())
@@ -33,9 +35,14 @@ def api_key_route_factory(options):
 
     @router.post('/revoke', response_model=APIQuota.APIQuotaBase)
     def revoke_api_key(api_key: APIQuota.APIKey, current_user: UserSchema.UserResponse = Depends(get_current_active_user), db: Session = Depends(options['get_db'])):
-        db_user_api_quota_data_for_api_key = db.query(models.APIQuota).filter(models.APIQuota.user_id == current_user.id and models.APIQuota.api_key == api_key).first()
+        db_user_api_quota_data_for_api_key = db.query(models.APIQuota).filter(
+            and_(
+                models.APIQuota.user_id == current_user.id,
+                models.APIQuota.api_key == api_key,
+            )
+        ).first()
         if not db_user_api_quota_data_for_api_key:
-            raise HTTPException(status_code=400, detail='No such API Key found')
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=messages.INVALID_API_KEY)
         db_user_api_quota_data_for_api_key.active = False
         db_user_api_quota_data_for_api_key.updated_at = datetime.fromtimestamp(time())
         db.commit()
@@ -48,6 +55,7 @@ def api_key_route_factory(options):
         api_keys_data = []
         for api_data in db_user_api_quota_data:
             api_keys_data.append(UserSchema.UserAPIData(
+                id=api_data.id,
                 api_key=api_data.api_key,
                 quota=api_data.quota,
                 active=api_data.active,

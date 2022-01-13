@@ -1,5 +1,6 @@
 from fastapi import HTTPException, Depends, APIRouter, status
 from sqlalchemy.orm import Session
+from constants import messages
 from schema import user as UserSchema
 from database import models
 import json
@@ -14,7 +15,7 @@ def auth_route_factory(options):
     def login(user: UserSchema.UserLogin, db: Session = Depends(options['get_db'])):
         db_user = db.query(models.User).filter(models.User.email == user.email).first()
         if db_user is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='user not found')
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=messages.USER_NOT_FOUND)
         if not bcrypt.checkpw(user.password.encode('utf-8'), db_user.hashed_password.encode('utf-8')):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Password")
         redis_client = options['redis']
