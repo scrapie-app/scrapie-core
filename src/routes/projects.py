@@ -25,14 +25,15 @@ def projects_route_factory(options):
         ).first()
         if not db_api_data_for_user: 
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=messages.INVALID_API_KEY)
+        timestamp = datetime.fromtimestamp(time())
         db_projects_data = models.Projects(
             user_id=current_user.id,
             name=project_data.name,
             description=project_data.description,
             api_key_id=db_api_data_for_user.id,
             active=True,
-            created_at=datetime.fromtimestamp(time()),
-            updated_at=datetime.fromtimestamp(time()),
+            created_at=timestamp,
+            updated_at=timestamp,
         )
         db.add(db_projects_data)
         db.commit()
@@ -47,6 +48,7 @@ def projects_route_factory(options):
             and_(
                 models.Projects.id == project_id.id,
                 models.Projects.active == True,
+                models.Projects.user_id == current_user.id,
             )
         ).first()
         if not db_user_project_data:
@@ -65,20 +67,7 @@ def projects_route_factory(options):
         ).all()
         if not db_user_projects_data:
             raise HTTPException(status.HTTP_404_NOT_FOUND, detail=messages.PROJECTS_NOT_FOUND)
-        projects_list_data = []
-        for project_data in db_user_projects_data:
-            projects_list_data.append(
-                ProjectSchema.ProjectBase(
-                    id=project_data.id,
-                    user_id=project_data.user_id,
-                    name=project_data.name,
-                    description=project_data.description,
-                    api_key_id=project_data.api_key_id,
-                    active=project_data.active,
-                    created_at=project_data.created_at,
-                    updated_at=project_data.created_at,
-                )
-            )
+        projects_list_data = list(map(lambda project_data: ProjectSchema.Project.from_orm(project_data), db_user_projects_data))
         return ProjectSchema.ProjectsData(projects=projects_list_data)
 
     @router.post('/delete', response_model=ProjectSchema.Project)
