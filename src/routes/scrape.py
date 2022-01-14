@@ -1,6 +1,7 @@
 import requests
 from fastapi import Depends, HTTPException, APIRouter, status
 from sqlalchemy.orm import Session
+from constants import messages
 from database import models
 from schema import website, user
 from ..util import helper_fns
@@ -15,9 +16,9 @@ def scrape_route_factory(options):
         # get session data from redis using bearer
         api_data_for_user = db.query(models.APIQuota).filter(models.APIQuota.user_id == current_user.id).first()
         if api_data_for_user is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid API Key')
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_API_KEY)
         if api_data_for_user.quota < 1:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='API Quota Exceeded')
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=messages.API_QUOTA_EXCEEDED)
         api_data_for_user.quota -= 1
         db.commit()
         try:

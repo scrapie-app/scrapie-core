@@ -25,6 +25,7 @@ class UserResponse(UserBase):
   updated_at: Optional[datetime] = None  
 
 class UserAPIData(BaseModel):
+  id: int
   api_key: str
   quota: int
   active: bool

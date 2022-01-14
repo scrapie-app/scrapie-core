@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .routes import api_key, scrape, users, auth
+from .routes import api_key, scrape, users, auth, projects
 import toml
 import os
 
@@ -33,11 +33,13 @@ class App:
         scrape_router = scrape.scrape_route_factory(options=appOptions)
         auth_router = auth.auth_route_factory(options=appOptions)
         api_key_router = api_key.api_key_route_factory(options=appOptions)
+        projects_router = projects.projects_route_factory(options=appOptions)
 
         self.app.include_router(user_router)
         self.app.include_router(scrape_router)
         self.app.include_router(auth_router)
         self.app.include_router(api_key_router, prefix='/api')
+        self.app.include_router(projects_router, prefix='/project')
         
         # home route
         @self.app.get('/')
